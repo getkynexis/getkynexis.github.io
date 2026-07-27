@@ -1,0 +1,608 @@
+<title>Kynexis: passive behavioral intelligence for investment professionals</title>
+<style>
+  :root{
+    --bg:#060608; --s1:#0d0d11; --s2:#141419; --s3:#1c1c22;
+    --bd:#22222a; --bd2:#33333d;
+    --tx:#f1f1f3; --dim:#8b8b93; --faint:#55555d;
+    --red:#e0736d; --grn:#5cbf9a; --amber:#d2a862; --blue:#6aa5ff;
+    --red-d:rgba(224,115,109,.14); --grn-d:rgba(92,191,154,.14);
+    --amber-d:rgba(210,168,98,.12); --blue-d:rgba(106,165,255,.13);
+    --sans:-apple-system,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,Roboto,sans-serif;
+    --disp:-apple-system,"SF Pro Display","Segoe UI",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,"JetBrains Mono","Roboto Mono",monospace;
+    --maxw:1180px; --r:9px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:16px;line-height:1.6;
+    letter-spacing:-.006em;-webkit-font-smoothing:antialiased}
+  ::selection{background:rgba(210,168,98,.32);color:#fff}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:3px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 26px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  h1,h2,h3{margin:0;font-family:var(--disp);font-weight:640;letter-spacing:-.028em;line-height:1.05;text-wrap:balance}
+  h1{font-size:clamp(34px,5.2vw,58px)}
+  h2{font-size:clamp(25px,3.3vw,39px);line-height:1.08}
+  h3{font-size:17px;font-weight:600;letter-spacing:-.01em;font-family:var(--sans)}
+  p{margin:0}
+  .lede{color:var(--dim);font-size:clamp(16px,1.5vw,19px);line-height:1.55;max-width:54ch}
+  .dim{color:var(--dim)} .faint{color:var(--faint)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);
+    display:inline-flex;align-items:center;gap:.7em}
+  .eyebrow::before{content:"";width:20px;height:1px;background:var(--amber);opacity:.7}
+
+  header.nav{position:sticky;top:0;z-index:40;background:rgba(6,6,8,.76);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd)}
+  .nav .bar{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:660;font-size:18px;letter-spacing:-.02em}
+  .logo .glyph{display:flex;align-items:flex-end;gap:2.5px;height:15px}
+  .logo .glyph i{width:3px;border-radius:1px;display:block}
+  .menu{display:flex;gap:2px;align-items:center}
+  .menu a{font-size:14px;color:var(--dim);padding:8px 13px;border-radius:6px;transition:.16s}
+  .menu a:hover{color:var(--tx);background:var(--s2)}
+  .menu a.on{color:var(--tx);background:var(--s2)}
+  .menu a.acq{color:#141008;background:var(--amber);font-weight:600;margin-left:6px}
+  .menu a.acq:hover{background:#e0b874;color:#141008}
+  .menu-btn{display:none;background:none;border:1px solid var(--bd2);color:var(--tx);border-radius:6px;width:38px;height:34px;font-size:16px;cursor:pointer}
+  @media (max-width:760px){
+    .menu{position:fixed;inset:60px 0 auto 0;flex-direction:column;background:var(--s1);border-bottom:1px solid var(--bd);padding:10px 18px 16px;gap:2px;display:none}
+    .menu.open{display:flex} .menu a{width:100%;padding:12px} .menu-btn{display:block}
+  }
+
+  .page{display:none;animation:fade .5s ease both}
+  .page.live{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.page{animation:none}}
+  section{padding:60px 0}
+  @media (max-width:760px){section{padding:42px 0}}
+  .rule{height:1px;background:var(--bd);border:0;margin:0}
+
+  .btn{font-family:var(--sans);font-size:15px;font-weight:560;padding:11px 20px;border-radius:7px;border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:.16s}
+  .btn-p{background:var(--tx);color:#0a0a0a} .btn-p:hover{transform:translateY(-1px);background:#fff}
+  .btn-s{background:transparent;color:var(--tx);border-color:var(--bd2)}
+  .btn-s:hover{border-color:var(--amber);background:var(--amber-d)}
+  .btn .ar{font-family:var(--mono)}
+
+  /* ── HOME hero (centered) ── */
+  .hero{padding:66px 0 26px;display:flex;flex-direction:column;gap:48px}
+  .hero-head{text-align:center;max-width:860px;margin:0 auto}
+  .hero-head h1{margin-top:24px;font-size:clamp(31px,6.6vw,72px);letter-spacing:-.033em;line-height:1.02}
+  .hero-head .lede{margin:24px auto 0;max-width:58ch}
+  .hero-head .cta{display:flex;gap:12px;margin-top:32px;justify-content:center;flex-wrap:wrap}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);
+    display:inline-flex;align-items:center;gap:15px}
+  .kicker::before,.kicker::after{content:"";width:32px;height:1px;background:var(--amber);opacity:.5}
+  .home-tail{height:56px}
+  /* ── PRIVACY (centered, roomy) ── */
+  .phead{text-align:center;max-width:740px;margin:0 auto 46px}
+  .phead .kicker{margin-bottom:22px}
+  .phead h2{font-size:clamp(28px,4vw,46px)}
+  .phead .lede{margin:20px auto 0;max-width:52ch}
+  .pdia{max-width:1000px;margin:0 auto}
+  .pdia .envd{align-items:stretch;gap:22px}
+  .pdia .node{display:flex;flex-direction:column;justify-content:center;padding:22px 24px}
+  .pdia .flow{align-self:center}
+  .pnote{max-width:56ch;margin:44px auto 0;text-align:center;color:var(--faint);font-size:13.5px;line-height:1.65;letter-spacing:.01em}
+  .ppg{padding-bottom:104px}
+  @media (max-width:560px){ .hero-head .cta .btn{flex:1 1 100%;justify-content:center} .home-tail{height:32px} .ppg{padding-bottom:64px} .kicker{letter-spacing:.18em} }
+
+  /* product screen frame */
+  .screen{position:relative;border:1px solid var(--bd2);border-radius:12px;overflow:hidden;
+    background:linear-gradient(180deg,#0b0b0f,#070709)}
+  .screen::before,.screen::after{content:"";position:absolute;width:16px;height:16px;pointer-events:none;z-index:3}
+  .screen::before{top:12px;left:12px;border-top:1px solid var(--faint);border-left:1px solid var(--faint);opacity:.55}
+  .screen::after{top:12px;right:12px;border-top:1px solid var(--faint);border-right:1px solid var(--faint);opacity:.55}
+  .screen-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 22px 6px;font-family:var(--mono)}
+  .screen-hd .tk{display:flex;align-items:baseline;gap:12px}
+  .screen-hd .tk .sym{font-size:22px;font-weight:600;letter-spacing:0;color:var(--tx);font-family:var(--disp)}
+  .screen-hd .tk .px{font-size:18px;color:var(--dim)}
+  .screen-hd .tk .chg{font-size:15px;color:var(--red)}
+  .screen-hd .venue{font-size:11px;color:var(--faint);letter-spacing:.14em;margin-top:3px}
+  .screen-hd .mon{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.18em;color:var(--faint)}
+  .screen-hd .mon i{width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn)}
+  .screen-hd .mon b{color:var(--tx);font-weight:500}
+  .chart-wrap{position:relative;height:440px}
+  @media (max-width:820px){.chart-wrap{height:340px}}
+  @media (max-width:520px){.chart-wrap{height:270px} .screen-hd .venue{display:none} .screen-hd .mon{display:none} .screen-hd .tk .sym{font-size:19px} .screen-hd{padding:14px 16px 6px}}
+  .chart-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+
+  .alert{position:absolute;top:26px;right:26px;width:min(60%,384px);background:rgba(17,17,21,.92);
+    border:1px solid var(--bd2);border-radius:14px;padding:18px 20px;backdrop-filter:blur(4px);z-index:2}
+  @media (max-width:520px){.alert{top:12px;right:12px;left:12px;width:auto;padding:14px 15px}}
+  .alert .ah{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .alert .ah .who{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500}
+  .alert .ah .who .mk{width:26px;height:26px;border-radius:7px;background:#0a0a0d;border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center}
+  .alert .ah .who .mk i{width:8px;height:8px;border-radius:50%;background:var(--grn)}
+  .alert .ah .now{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .alert .at{font-family:var(--disp);font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+  .alert .ab{font-size:13.5px;color:var(--dim);line-height:1.5}
+  .alert .af{display:flex;align-items:center;justify-content:space-between;margin-top:15px}
+  .alert .brs{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--amber);border:1px solid var(--amber);
+    opacity:.92;border-radius:7px;padding:6px 11px}
+  .alert .vr{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  @media (max-width:520px){.alert .ab{display:none}}
+
+  /* pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:34px}
+  @media (max-width:760px){.pillars{grid-template-columns:1fr}}
+  .pill{position:relative;background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:22px}
+  .pill .ic{height:32px;margin-bottom:15px}
+  .pill h3{margin-bottom:7px}
+  .pill p{color:var(--dim);font-size:14.5px;line-height:1.5}
+  .platstrip{display:flex;align-items:center;gap:16px;flex-wrap:wrap;color:var(--faint);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;margin-top:24px}
+  .platstrip b{color:var(--dim);font-weight:500}
+  .platstrip .d{width:4px;height:4px;border-radius:50%;background:var(--bd2)}
+
+  .shead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:32px}
+  .shead h2{margin-top:14px;max-width:20ch}
+  .shead .side{color:var(--faint);font-size:13.5px;max-width:26ch;text-align:right}
+  @media (max-width:640px){.shead .side{text-align:left}}
+
+  /* walkthrough */
+  .demo{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
+  @media (max-width:820px){.demo{grid-template-columns:1fr}}
+  .steps{display:flex;flex-direction:column;gap:5px}
+  .step{text-align:left;background:none;border:0;border-left:2px solid var(--bd);padding:12px 16px;cursor:pointer;color:var(--dim);transition:.18s;border-radius:0 6px 6px 0}
+  .step:hover{background:var(--s1);color:var(--tx)}
+  .step.on{border-left-color:var(--amber);background:var(--s1);color:var(--tx)}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em}
+  .step.on .n{color:var(--amber)}
+  .step h3{margin:3px 0;font-size:15.5px}
+  .step p{font-size:13px;color:var(--faint);line-height:1.45}
+  .stage{background:linear-gradient(180deg,#0b0b0f,#070709);border:1px solid var(--bd);border-radius:var(--r);min-height:420px;padding:26px;position:relative;overflow:hidden}
+  @media (max-width:820px){.stage{min-height:380px}}
+  .prog{position:absolute;top:0;left:0;height:2px;background:var(--amber);transition:width .3s linear}
+  .view{display:none} .view.on{display:block;animation:fade .45s ease both}
+  .view .cap{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin-bottom:18px;display:flex;gap:8px}
+  .view .cap .k{color:var(--amber)}
+  .controls{display:flex;align-items:center;gap:14px;margin-top:22px}
+  .controls button{background:var(--s2);border:1px solid var(--bd2);color:var(--tx);border-radius:6px;width:34px;height:34px;cursor:pointer;font-family:var(--mono);display:inline-flex;align-items:center;justify-content:center}
+  .controls button:hover{border-color:var(--amber)}
+  .controls .pp{font-size:12px;color:var(--faint);font-family:var(--mono)}
+
+  .term{background:#050506;border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+  .term .tb{display:flex;align-items:center;gap:7px;padding:9px 12px;border-bottom:1px solid var(--bd);font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .term .tb i{width:9px;height:9px;border-radius:50%;background:var(--bd2)}
+  .term .tb .t{margin-left:8px;letter-spacing:.06em}
+  .term .body{display:grid;grid-template-columns:1.4fr 1fr}
+  @media (max-width:520px){.term .body{grid-template-columns:1fr}}
+  .term .chart{padding:16px;border-right:1px solid var(--bd)}
+  .term .chart .px{font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .term .chart .px b{color:var(--grn)}
+  .term .ticket{padding:16px;display:flex;flex-direction:column;gap:10px}
+  .term .ticket .rowk{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12.5px}
+  .term .ticket .rowk .l{color:var(--faint)} .term .ticket .rowk .v{color:var(--tx)}
+  .term .filled{margin-top:4px;text-align:center;padding:9px;border-radius:6px;background:var(--grn-d);color:var(--grn);font-family:var(--mono);font-size:12px;letter-spacing:.08em}
+
+  .detect{display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center;padding:20px 0}
+  .scanline{width:100%;max-width:440px;height:120px;border:1px solid var(--bd);border-radius:6px;position:relative;overflow:hidden;background:var(--s2)}
+  .scanline .sweep{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);box-shadow:0 0 14px var(--amber);animation:sweep 2.4s linear infinite}
+  @keyframes sweep{0%{left:-2px}100%{left:100%}}
+  @media (prefers-reduced-motion:reduce){.scanline .sweep{animation:none;left:60%}}
+  .scanline .txt{position:absolute;inset:0;padding:14px;font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.7}
+  .chip{display:inline-flex;font-family:var(--mono);font-size:14px;border:1px solid var(--bd2);border-radius:8px;overflow:hidden}
+  .chip span{padding:9px 14px;border-right:1px solid var(--bd)}
+  .chip span:last-child{border-right:0}
+  .chip .tk{color:var(--tx);font-weight:600} .chip .bu{color:var(--grn)} .chip .pl{color:var(--dim)} .chip .cf{color:var(--amber)}
+
+  .sigs{display:flex;flex-direction:column;gap:11px}
+  .sig{display:grid;grid-template-columns:132px 1fr 42px;align-items:center;gap:12px}
+  .sig .nm{font-size:13.5px;color:var(--dim)}
+  .sig .track{height:9px;background:var(--s3);border-radius:5px;overflow:hidden}
+  .sig .fill{height:100%;border-radius:5px;width:0;transition:width .9s cubic-bezier(.2,.7,.2,1)}
+  .sig .sc{font-family:var(--mono);font-size:13px;text-align:right;color:var(--tx)}
+  .risk .fill{background:var(--red)} .risk .sc{color:var(--red)}
+  .warnb .fill{background:var(--amber)} .warnb .sc{color:var(--amber)}
+
+  .report{background:var(--s2);border:1px solid var(--bd2);border-radius:12px;overflow:hidden;max-width:440px}
+  .report .rh{padding:16px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+  .report .rh .ttl{font-weight:600;font-size:16px;font-family:var(--disp)}
+  .report .sev{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;padding:4px 9px;border-radius:5px;background:var(--red-d);color:var(--red)}
+  .report .rb{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+  .report .msg{font-size:14.5px;color:var(--tx)}
+  .report .def{font-size:12.5px;color:var(--faint);line-height:1.5}
+  .report .ev{display:flex;gap:20px;align-items:flex-end;padding-top:6px;border-top:1px solid var(--bd)}
+  .evbar{display:flex;flex-direction:column;gap:6px;align-items:center}
+  .evbar .b{width:34px;background:var(--s3);border-radius:4px 4px 0 0;display:flex;align-items:flex-end}
+  .evbar .b i{width:100%;border-radius:4px 4px 0 0;display:block}
+  .evbar .lab{font-family:var(--mono);font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+  .evbar .val{font-family:var(--mono);font-size:12px;color:var(--tx)}
+
+  .envd{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+  @media (max-width:680px){.envd{grid-template-columns:1fr;gap:12px}}
+  .node{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:16px}
+  .node .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+  .node .li{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--dim);padding:3px 0}
+  .node .li .lk{color:var(--grn)} .node .li.no .lk{color:var(--red)}
+  .flow{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--faint);font-family:var(--mono);font-size:10px}
+  .env-ico{width:48px;height:34px;border:1.5px solid var(--amber);border-radius:5px;position:relative;background:var(--amber-d)}
+  .env-ico::after{content:"";position:absolute;inset:0;border-top:1.5px solid var(--amber);clip-path:polygon(0 0,50% 55%,100% 0)}
+  @media (max-width:680px){.flow{flex-direction:row}}
+
+  .tiers{display:flex;flex-direction:column}
+  .trow{display:grid;grid-template-columns:200px 1fr 116px;align-items:center;gap:20px;padding:14px 6px;border-bottom:1px solid var(--bd)}
+  @media (max-width:680px){.trow{grid-template-columns:1fr 96px;gap:6px 14px} .trow .d{grid-column:1/-1;order:3}}
+  .trow .nm{font-size:15.5px} .trow .d{color:var(--dim);font-size:13.5px}
+  .tag{justify-self:end;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px}
+  .tag i{width:8px;height:8px;border-radius:50%}
+  .t-s{color:var(--grn)} .t-s i{background:var(--grn)}
+  .t-f{color:var(--blue)} .t-f i{background:var(--blue)}
+  .t-l{color:var(--amber)} .t-l i{background:var(--amber)}
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;font-size:13px;color:var(--dim)}
+  .legend span{display:inline-flex;gap:8px;align-items:center} .legend i{width:8px;height:8px;border-radius:50%}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-top:32px}
+  @media (max-width:640px){.stats{grid-template-columns:1fr 1fr}}
+  .st{padding:24px 20px;border-right:1px solid var(--bd)}
+  .st:last-child{border-right:0}
+  @media (max-width:640px){.st:nth-child(2){border-right:0} .st:nth-child(-n+2){border-bottom:1px solid var(--bd)}}
+  .st .n{font-family:var(--mono);font-size:36px;letter-spacing:-.02em;color:var(--tx)}
+  .st .n .u{font-size:17px;color:var(--faint)}
+  .st .l{margin-top:8px;font-size:13px;color:var(--dim);line-height:1.45}
+
+  .inv{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+  @media (max-width:680px){.inv{grid-template-columns:1fr}}
+  .iv{display:grid;grid-template-columns:26px 1fr;gap:14px;padding:18px 0;border-top:1px solid var(--bd)}
+  .iv .n{font-family:var(--mono);font-size:12px;color:var(--amber)}
+  .iv h3{margin-bottom:4px} .iv p{color:var(--dim);font-size:14px;line-height:1.5}
+  .acqbox{margin-top:32px;background:radial-gradient(130% 160% at 85% 0%,rgba(210,168,98,.09),transparent 55%),var(--s1);
+    border:1px solid var(--bd2);border-radius:12px;padding:44px 40px;display:grid;grid-template-columns:1.3fr 1fr;gap:36px}
+  @media (max-width:760px){.acqbox{grid-template-columns:1fr;padding:30px 24px}}
+  .acqbox .note{color:var(--dim);margin-top:16px;max-width:44ch;font-size:15px}
+  .acqside{border-left:1px solid var(--bd);padding-left:34px}
+  @media (max-width:760px){.acqside{border-left:0;padding-left:0;border-top:1px solid var(--bd);padding-top:24px}}
+  .acqside .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+  .acqside .v{font-size:16px;margin:5px 0 20px}
+  .acqside .v a{color:var(--amber);border-bottom:1px solid var(--bd2);padding-bottom:2px}
+  .acqside .v a:hover{border-color:var(--amber)}
+
+  footer{border-top:1px solid var(--bd);padding:26px 0 40px;color:var(--faint);font-size:12px;font-family:var(--mono);letter-spacing:.04em}
+  .frow{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+  .frow .disc{max-width:64ch;line-height:1.6}
+  .anim-in{opacity:0;transform:translateY(12px)}
+  .anim-in.seen{opacity:1;transform:none;transition:opacity .6s ease,transform .6s ease}
+  @media (prefers-reduced-motion:reduce){.anim-in{opacity:1;transform:none}}
+</style>
+
+<header class="nav">
+  <div class="wrap bar">
+    <a class="logo" href="#/" aria-label="Kynexis home"><span class="glyph" id="glyph"></span> Kynexis</a>
+    <button class="menu-btn" id="mbtn" aria-label="Menu">≡</button>
+    <nav class="menu" id="menu">
+      <a href="#/" data-r="/">Overview</a>
+      <a href="#/how" data-r="/how">How it works</a>
+      <a href="#/engine" data-r="/engine">The engine</a>
+      <a href="#/privacy" data-r="/privacy">Privacy</a>
+      <a class="acq" href="#/acquire" data-r="/acquire">For acquirers</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page" data-page="/">
+    <div class="wrap">
+      <div class="hero">
+        <div class="hero-head">
+          <span class="kicker">Passive &#183; Local &#183; Validated</span>
+          <h1>See the decision,<br>not just the trade.</h1>
+          <p class="lede">Kynexis reads how a professional actually behaves and surfaces the behavioral risk before it compounds. It runs on the trader's own machine, and nothing sensitive ever leaves it.</p>
+          <div class="cta">
+            <a class="btn btn-p" href="#/how">Watch how it works <span class="ar">-&gt;</span></a>
+            <a class="btn btn-s" href="#/engine">See the evidence</a>
+          </div>
+        </div>
+        <div class="screen">
+          <div class="screen-hd">
+            <div>
+              <div class="tk"><span class="sym">META</span><span class="px">$492.70</span><span class="chg">&#9660; -5.1%</span></div>
+              <div class="venue">NASDAQ &#183; 1H</div>
+            </div>
+            <div class="mon"><i></i><b>KYNEXIS</b> &#183; MONITORING</div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart" aria-hidden="true"></canvas>
+            <div class="alert">
+              <div class="ah"><span class="who"><span class="mk"><i></i></span>Kynexis</span><span class="now">now</span></div>
+              <div class="at">Loss aversion detected</div>
+              <div class="ab">4 closed positions held past their stop-loss thesis. Losers held 24 days on average versus 2.6 for winners.</div>
+              <div class="af"><span class="brs">BRS 52 &#183; ELEVATED</span><span class="vr">View report &#8594;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pill anim-in">
+          <svg class="ic" viewBox="0 0 40 32" fill="none"><rect x="1" y="1" width="38" height="24" rx="3" stroke="#33333d"/><path d="M6 19l6-7 5 4 6-9 5 6 5-4" stroke="#5cbf9a" stroke-width="1.6"/><circle cx="34" cy="9" r="2.4" fill="#e0736d"/></svg>
+          <h3>Passive by design</h3>
+          <p>No forms, no journaling, no change to the workflow. It reads the screen, detects the trade, and scores the behavior on its own.</p>
+        </div>
+        <div class="pill anim-in">
+          <svg class="ic" viewBox="0 0 40 32" fill="none"><rect x="6" y="7" width="28" height="19" rx="3" stroke="#33333d"/><path d="M6 9l14 10 14-10" stroke="#d2a862" stroke-width="1.6"/><circle cx="20" cy="17" r="5" fill="#060608" stroke="#5cbf9a" stroke-width="1.4"/><path d="M20 14.5v5M17.5 17h5" stroke="#5cbf9a" stroke-width="1.2"/></svg>
+          <h3>Private by construction</h3>
+          <p>Screens, trades, positions and profit and loss stay on the device. In a firm, only a sealed alert envelope crosses a machine.</p>
+        </div>
+        <div class="pill anim-in">
+          <svg class="ic" viewBox="0 0 40 32" fill="none"><rect x="4" y="18" width="6" height="9" rx="1" fill="#e0736d"/><rect x="13" y="12" width="6" height="15" rx="1" fill="#d2a862"/><rect x="22" y="7" width="6" height="20" rx="1" fill="#5cbf9a"/><rect x="31" y="15" width="5" height="12" rx="1" fill="#6aa5ff"/></svg>
+          <h3>Validated, not asserted</h3>
+          <p>Eighteen signals, each defined from the academic literature and tested blind against 490 synthetic traders on 30 years of real market data.</p>
+        </div>
+      </div>
+      <div class="home-tail"></div>
+    </div>
+  </div>
+
+  <div class="page" data-page="/how">
+    <div class="wrap">
+      <div class="shead">
+        <div><span class="eyebrow">How it works</span><h2>From a trade on screen to an insight, without the data leaving the desk.</h2></div>
+        <div class="side">A walkthrough of the passive pipeline, using the readings from a real recorded session.</div>
+      </div>
+      <div class="demo">
+        <div class="steps" id="steps">
+          <button class="step on" data-i="0"><div class="n">STEP 01</div><h3>A trade is placed</h3><p>The professional trades as usual. No input to Kynexis.</p></button>
+          <button class="step" data-i="1"><div class="n">STEP 02</div><h3>The screen is read</h3><p>Passive capture and OCR detect the order.</p></button>
+          <button class="step" data-i="2"><div class="n">STEP 03</div><h3>Behavior is scored</h3><p>Eighteen signals run against the history.</p></button>
+          <button class="step" data-i="3"><div class="n">STEP 04</div><h3>An insight surfaces</h3><p>A plain alert with the evidence behind it.</p></button>
+          <button class="step" data-i="4"><div class="n">STEP 05</div><h3>The firm sees a footprint</h3><p>Only a sealed envelope crosses a machine.</p></button>
+        </div>
+        <div class="stage">
+          <div class="prog" id="prog"></div>
+          <div class="view on" data-v="0">
+            <div class="cap"><span class="k">01</span> A trade is placed, on any platform</div>
+            <div class="term">
+              <div class="tb"><i></i><i></i><i></i><span class="t">TradingView &#183; paper</span></div>
+              <div class="body">
+                <div class="chart">
+                  <div class="px">BX <b>130.00</b> <span class="dim">+4.42%</span></div>
+                  <svg viewBox="0 0 200 70" style="width:100%;height:70px;margin-top:10px" preserveAspectRatio="none">
+                    <polyline points="0,55 20,50 40,52 60,42 80,45 100,34 120,30 140,33 160,22 180,18 200,14" fill="none" stroke="#5cbf9a" stroke-width="1.5"/>
+                    <polyline points="0,55 20,50 40,52 60,42 80,45 100,34 120,30 140,33 160,22 180,18 200,14 200,70 0,70" fill="rgba(92,191,154,.08)" stroke="none"/>
+                  </svg>
+                </div>
+                <div class="ticket">
+                  <div class="rowk"><span class="l">Side</span><span class="v" style="color:var(--grn)">BUY</span></div>
+                  <div class="rowk"><span class="l">Symbol</span><span class="v">NYSE:BX</span></div>
+                  <div class="rowk"><span class="l">Type</span><span class="v">Market</span></div>
+                  <div class="rowk"><span class="l">Qty</span><span class="v">1</span></div>
+                  <div class="filled">ORDER FILLED &#183; 130.00</div>
+                </div>
+              </div>
+            </div>
+            <p class="dim" style="font-size:14px;margin-top:16px">Kynexis asks nothing of the trader. It watches the screen the way a risk officer would look over a shoulder, only without seeing anything leave the room.</p>
+          </div>
+          <div class="view" data-v="1">
+            <div class="cap"><span class="k">02</span> The screen is read, on-device</div>
+            <div class="detect">
+              <div class="scanline"><div class="sweep"></div>
+                <div class="txt">&gt; capturing frame 1280x800<br>&gt; ocr: NYSE:BX &nbsp; MARKET &nbsp; 1 &nbsp; FILLED<br>&gt; resolve ticker: exchange-prefix -&gt; BX<br>&gt; side: BUY &nbsp; platform: TradingView</div>
+              </div>
+              <div class="chip"><span class="tk">BX</span><span class="bu">BUY</span><span class="pl">TradingView</span><span class="cf">0.82</span></div>
+            </div>
+            <p class="dim" style="font-size:14px;margin-top:16px">A local vision service reads the order off the pixels. The ticker resolver prefers the exchange-tagged symbol, so a busy screen full of menu words never gets mistaken for a trade.</p>
+          </div>
+          <div class="view" data-v="2">
+            <div class="cap"><span class="k">03</span> Behavior is scored against the history</div>
+            <div class="sigs" id="sigbars">
+              <div class="sig risk"><div class="nm">Overconfidence</div><div class="track"><div class="fill" data-w="100"></div></div><div class="sc">100</div></div>
+              <div class="sig risk"><div class="nm">Loss aversion</div><div class="track"><div class="fill" data-w="100"></div></div><div class="sc">100</div></div>
+              <div class="sig risk"><div class="nm">Revenge trading</div><div class="track"><div class="fill" data-w="94"></div></div><div class="sc">94</div></div>
+              <div class="sig warnb"><div class="nm">Emotional sizing</div><div class="track"><div class="fill" data-w="80"></div></div><div class="sc">80</div></div>
+              <div class="sig warnb"><div class="nm">Attribution error</div><div class="track"><div class="fill" data-w="77"></div></div><div class="sc">77</div></div>
+              <div class="sig warnb"><div class="nm">Overtrading</div><div class="track"><div class="fill" data-w="63"></div></div><div class="sc">63</div></div>
+            </div>
+            <p class="dim" style="font-size:14px;margin-top:18px">Each signal is a construct from the literature, disposition, calibration, extrapolation, scored on the trader's own closed history. These are the readings from the recorded session.</p>
+          </div>
+          <div class="view" data-v="3">
+            <div class="cap"><span class="k">04</span> An insight surfaces, with its evidence</div>
+            <div class="report">
+              <div class="rh"><span class="ttl">Overtrading</span><span class="sev">HIGH</span></div>
+              <div class="rb">
+                <div class="msg">Your recent trading pace is 2.9x your usual daily rate.</div>
+                <div class="def">Overtrading is a sustained rise in trade frequency above your own baseline, often a sign of impulsive or emotionally driven activity.</div>
+                <div class="ev">
+                  <div class="evbar"><div class="b" style="height:34px"><i style="height:32%;background:var(--dim)"></i></div><div class="val">0.93</div><div class="lab">Baseline</div></div>
+                  <div class="evbar"><div class="b" style="height:64px"><i style="height:100%;background:var(--red)"></i></div><div class="val">2.71</div><div class="lab">Recent</div></div>
+                  <div class="dim" style="font-size:12.5px;align-self:center;max-width:16ch;line-height:1.4">Trades per day, recent against baseline</div>
+                </div>
+              </div>
+            </div>
+            <p class="dim" style="font-size:14px;margin-top:16px">The alert is written in plain language and always carries the numbers behind it. The trader can open the full report and respond to it, all on the device.</p>
+          </div>
+          <div class="view" data-v="4">
+            <div class="cap"><span class="k">05</span> In a firm, only a footprint crosses the line</div>
+            <div class="envd">
+              <div class="node"><div class="h">On the trader's machine</div>
+                <div class="li"><span class="lk">&#8226;</span> Ticker, thesis, position</div>
+                <div class="li"><span class="lk">&#8226;</span> Profit and loss, conviction</div>
+                <div class="li"><span class="lk">&#8226;</span> Every score and its evidence</div>
+              </div>
+              <div class="flow"><div class="env-ico"></div><span>SEALED<br>ENVELOPE</span></div>
+              <div class="node"><div class="h">What the supervisor sees</div>
+                <div class="li"><span class="lk">&#8226;</span> Pattern: overtrading</div>
+                <div class="li"><span class="lk">&#8226;</span> Severity: high</div>
+                <div class="li no"><span class="lk">&#215;</span> No ticker, thesis, or figure</div>
+              </div>
+            </div>
+            <p class="dim" style="font-size:14px;margin-top:18px">The envelope has a fixed shape. By construction it cannot carry a ticker, a position, or a number, and a supervisor only ever sees their own branch of the tree. The boundary is enforced in code and proven by the test suite.</p>
+          </div>
+          <div class="controls">
+            <button id="prev" aria-label="Previous step">&lt;</button>
+            <button id="next" aria-label="Next step">&gt;</button>
+            <button id="play" aria-label="Pause"><svg width="11" height="11" viewBox="0 0 10 10"><rect x="1.5" y="1" width="2.5" height="8" rx="1" fill="currentColor"/><rect x="6" y="1" width="2.5" height="8" rx="1" fill="currentColor"/></svg></button>
+            <span class="pp" id="ppl">Auto-playing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" data-page="/engine">
+    <div class="wrap">
+      <div class="shead">
+        <div><span class="eyebrow">The engine</span><h2>Eighteen signals, each grounded in the literature, none merely asserted.</h2></div>
+        <div class="side">Validated non-circularly: the ground truth is the academic construct, not the detector rule.</div>
+      </div>
+      <div class="tiers anim-in">
+        <div class="trow"><div class="nm">Loss aversion</div><div class="d">Losers held far longer than winners, on the trader's own hold times</div><div class="tag t-s"><i></i>Strong</div></div>
+        <div class="trow"><div class="nm">Revenge trading</div><div class="d">Rapid re-entry and upsizing in the minutes after a realized loss</div><div class="tag t-s"><i></i>Strong</div></div>
+        <div class="trow"><div class="nm">Overconfidence</div><div class="d">The gap between stated conviction and how often the top calls land</div><div class="tag t-s"><i></i>Strong</div></div>
+        <div class="trow"><div class="nm">Attribution error</div><div class="d">Losses blamed on external factors in the post-trade review</div><div class="tag t-s"><i></i>Strong</div></div>
+        <div class="trow"><div class="nm">Emotional sizing</div><div class="d">Position size rising after a loss rather than with edge</div><div class="tag t-s"><i></i>Strong</div></div>
+        <div class="trow"><div class="nm">Trend following</div><div class="d">Trading with the recent tape, the footprint of extrapolation, honestly labeled</div><div class="tag t-f"><i></i>Footprint</div></div>
+        <div class="trow"><div class="nm">Consensus clustering</div><div class="d">A desk converging on the same names in the same window</div><div class="tag t-f"><i></i>Footprint</div></div>
+        <div class="trow"><div class="nm">Stop discipline</div><div class="d">Harder to separate from luck on the blind test, so kept and down-weighted</div><div class="tag t-l"><i></i>Low confidence</div></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--grn)"></i>Strong: clean separation on the blind backtest</span>
+        <span><i style="background:var(--blue)"></i>Footprint: a real pattern, not proof of intent</span>
+        <span><i style="background:var(--amber)"></i>Low confidence: kept, scored low, never oversold</span>
+      </div>
+      <div class="stats anim-in">
+        <div class="st"><div class="n">18<span class="u">+2</span></div><div class="l">Individual signals, plus two desk-level aggregate detectors</div></div>
+        <div class="st"><div class="n">490</div><div class="l">Synthetic traders carrying literature-injected biases</div></div>
+        <div class="st"><div class="n">30<span class="u">yr</span></div><div class="l">Of real market data across regimes, as the test bed</div></div>
+        <div class="st"><div class="n">0</div><div class="l">Circularity: detectors run blind against the injected truth</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page" data-page="/privacy">
+    <div class="wrap ppg">
+      <div class="phead">
+        <span class="kicker">The moat</span>
+        <h2>Nothing sensitive leaves the machine.</h2>
+        <p class="lede">A supervisor never receives trader data. They receive a sealed envelope with a fixed shape that, by construction, cannot carry a ticker, a position, or a number.</p>
+      </div>
+      <div class="pdia">
+        <div class="envd anim-in">
+          <div class="node"><div class="h">Captured and scored locally</div>
+            <div class="li"><span class="lk">&#8226;</span> Screens and the text read from them</div>
+            <div class="li"><span class="lk">&#8226;</span> Orders, fills, positions, profit and loss</div>
+            <div class="li"><span class="lk">&#8226;</span> Stated conviction and written thesis</div>
+            <div class="li"><span class="lk">&#8226;</span> Every behavioral score and its evidence</div>
+          </div>
+          <div class="flow"><div class="env-ico"></div><span>SEALED<br>ENVELOPE</span></div>
+          <div class="node"><div class="h">Crosses in a firm, only this</div>
+            <div class="li"><span class="lk">&#8226;</span> A pattern and a severity</div>
+            <div class="li"><span class="lk">&#8226;</span> Scoped to one branch of the tree</div>
+            <div class="li no"><span class="lk">&#215;</span> Never a ticker, position, or figure</div>
+          </div>
+        </div>
+      </div>
+      <p class="pnote">Enforced in the code and proven by the correctness suite. That is the difference between a claim a bank can accept and one it cannot.</p>
+    </div>
+  </div>
+
+  <div class="page" data-page="/acquire">
+    <div class="wrap">
+      <div class="shead">
+        <div><span class="eyebrow">The asset</span><h2>A clean, finished asset. A transfer, not a project.</h2></div>
+        <div class="side">Finished, documented, licence-clean. No team, no infrastructure, no customer data to inherit.</div>
+      </div>
+      <div class="inv">
+        <div class="iv anim-in"><div class="n">01</div><div><h3>Full source</h3><p>Behavioral engine, local vision service, the desktop app, and the firm and desk web view.</p></div></div>
+        <div class="iv anim-in"><div class="n">02</div><div><h3>Packaged installers</h3><p>Reproducible builds for macOS, Windows and Linux, signing-ready for the acquirer's own identity.</p></div></div>
+        <div class="iv anim-in"><div class="n">03</div><div><h3>Validation harness</h3><p>The synthetic generator and blind backtest that produced the scorecard, runnable from zero.</p></div></div>
+        <div class="iv anim-in"><div class="n">04</div><div><h3>Complete data room</h3><p>Architecture, security white paper, signal reference, deployment runbook, and the validation report.</p></div></div>
+        <div class="iv anim-in"><div class="n">05</div><div><h3>Licence and IP file</h3><p>Bill of materials, a clean licence audit with no strong copyleft, and chain of title prepared.</p></div></div>
+        <div class="iv anim-in"><div class="n">06</div><div><h3>Privacy architecture</h3><p>The envelope boundary and scoped hierarchy, enforced in code and proven by the suites.</p></div></div>
+      </div>
+      <div class="acqbox anim-in">
+        <div>
+          <span class="eyebrow">For acquirers</span>
+          <h2 style="margin-top:14px">Acquirable without entanglement.</h2>
+          <p class="note">The hardest thing to build and the hardest thing to prove, a privacy architecture a bank will accept, is already done. Sign it and ship it under your own identity.</p>
+        </div>
+        <div class="acqside">
+          <div class="k">Best fit</div><div class="v dim">Trade surveillance, behavioral analytics, and RegTech acquirers</div>
+          <div class="k">Structure</div><div class="v dim">Clean asset purchase, optional short transition</div>
+          <div class="k">Enquire</div><div class="v"><a href="mailto:justin.gianfelice@mail.mcgill.ca?subject=Kynexis%20acquisition%20enquiry">justin.gianfelice@mail.mcgill.ca</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap frow">
+    <div class="logo" style="font-size:14px"><span class="glyph" id="glyph2"></span> KYNEXIS</div>
+    <p class="disc">Passive behavioral intelligence for investment professionals. Figures describe the engine and its validation methodology. Full diligence, including the validation report and source, is available under a mutual NDA.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  function glyph(el){ if(!el)return; var d=[['#e0736d',9],['#d2a862',15],['#5cbf9a',6]]; el.innerHTML='';
+    d.forEach(function(c){var i=document.createElement('i');i.style.height=c[1]+'px';i.style.background=c[0];el.appendChild(i);}); }
+  glyph(document.getElementById('glyph')); glyph(document.getElementById('glyph2'));
+
+  function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath();}
+  function drawChart(cv){
+    if(!cv)return; var x=cv.getContext('2d'),DPR=Math.min(devicePixelRatio||1,2);
+    var rc=cv.getBoundingClientRect(),W=rc.width,H=rc.height; if(!W)return;
+    cv.width=W*DPR;cv.height=H*DPR;x.setTransform(DPR,0,0,DPR,0,0);x.clearRect(0,0,W,H);
+    var rng=mulberry(11),N=52;
+    var an=[[0,519],[8,512],[15,506],[22,498],[29,491.5],[34,494],[40,503],[45,499],[49,495],[51,492.7]];
+    function tg(i){for(var k=0;k<an.length-1;k++){var a=an[k],b=an[k+1];if(i>=a[0]&&i<=b[0]){var t=(i-a[0])/(b[0]-a[0]);return a[1]+(b[1]-a[1])*t;}}return 492.7;}
+    var PMAX=523,PMIN=488,padT=22,padB=42,volH=52,plotB=H-padB-volH-6;
+    function Y(p){return padT+(PMAX-p)/(PMAX-PMIN)*(plotB-padT);}
+    var PL=6,PR=W-52,step=(PR-PL)/N,bw=step*0.56;
+    x.font='11px '+getComputedStyle(document.body).getPropertyValue('--mono');x.textBaseline='middle';
+    [490,500,510].forEach(function(p){var yy=Y(p);x.strokeStyle='#17171d';x.beginPath();x.moveTo(PL,yy);x.lineTo(PR,yy);x.stroke();x.fillStyle='#55555d';x.textAlign='left';x.fillText(p,PR+8,yy);});
+    var ey=Y(519);x.strokeStyle='rgba(210,168,98,.55)';x.setLineDash([6,6]);x.beginPath();x.moveTo(PL,ey);x.lineTo(PR,ey);x.stroke();x.setLineDash([]);
+    x.fillStyle='#d2a862';x.textAlign='left';x.fillText('ENTRY · 519.00 · HELD 24D',PL+4,ey-11);
+    var prev=519.6;
+    for(var i=0;i<N;i++){
+      var o=prev,c=tg(i)+(rng()-.5)*2.5; if(i==N-1)c=492.7;
+      var hi=Math.max(o,c)+rng()*1.9,lo=Math.min(o,c)-rng()*1.9,cx=PL+i*step+step/2,up=c>=o,col=up?'#5cbf9a':'#e0736d';
+      var vy=H-padB,vh=(0.3+rng()*0.7)*volH; x.fillStyle=up?'rgba(92,191,154,.26)':'rgba(224,115,109,.26)';x.fillRect(cx-bw/2,vy-vh,bw,vh);
+      x.strokeStyle=col;x.lineWidth=1.4;x.beginPath();x.moveTo(cx,Y(hi));x.lineTo(cx,Y(lo));x.stroke();
+      var yo=Y(o),yc=Y(c),tp=Math.min(yo,yc),bh=Math.max(Math.abs(yc-yo),2); x.fillStyle=col;rr(x,cx-bw/2,tp,bw,bh,1.5);x.fill();
+      prev=c;
+    }
+    var cyv=Y(492.7);x.fillStyle='#e0736d';rr(x,PR+4,cyv-11,50,22,4);x.fill();
+    x.fillStyle='#180d0d';x.textAlign='center';x.font='600 12px '+getComputedStyle(document.body).getPropertyValue('--mono');x.fillText('492.70',PR+29,cyv);
+    x.fillStyle='#55555d';x.font='11px '+getComputedStyle(document.body).getPropertyValue('--mono');x.textAlign='center';
+    [['Sep',4],['Oct',12],['Nov',21],['Dec',31],['’26',41],['Feb',48]].forEach(function(m){x.fillText(m[0],PL+m[1]*step+step/2,H-14);});
+  }
+  var chartCv=document.getElementById('chart');
+  function sizeChart(){ drawChart(chartCv); }
+  addEventListener('resize',sizeChart);
+
+  var pages=[].slice.call(document.querySelectorAll('.page')),links=[].slice.call(document.querySelectorAll('.menu a'));
+  function route(){
+    var h=(location.hash||'#/').replace('#','');if(h===''||h==='/')h='/';
+    var found=false; pages.forEach(function(p){var on=p.getAttribute('data-page')===h;p.classList.toggle('live',on);if(on)found=true;});
+    if(!found){pages[0].classList.add('live');h='/';}
+    links.forEach(function(a){a.classList.toggle('on',a.getAttribute('data-r')===h);});
+    document.getElementById('menu').classList.remove('open'); window.scrollTo(0,0);
+    if(h==='/how'){startDemo();} else stopDemo();
+    if(h==='/') requestAnimationFrame(sizeChart);
+    revealScan(); if(h==='/how') fillBars();
+  }
+  addEventListener('hashchange',route);
+  document.getElementById('mbtn').addEventListener('click',function(){document.getElementById('menu').classList.toggle('open');});
+
+  var cur=0,timer=null,playing=true,NV=5;
+  var views=[].slice.call(document.querySelectorAll('.view')),stepEls=[].slice.call(document.querySelectorAll('.step'));
+  function show(i){cur=(i+NV)%NV;views.forEach(function(v,k){v.classList.toggle('on',k===cur);});stepEls.forEach(function(s,k){s.classList.toggle('on',k===cur);});var p=document.getElementById('prog');if(p)p.style.width=((cur+1)/NV*100)+'%';if(cur===2)fillBars();}
+  function fillBars(){document.querySelectorAll('#sigbars .fill').forEach(function(f){f.style.width='0%';requestAnimationFrame(function(){setTimeout(function(){f.style.width=f.getAttribute('data-w')+'%';},40);});});}
+  function startDemo(){show(cur);if(reduce)return;stopDemo();if(playing)timer=setInterval(function(){show(cur+1);},4200);}
+  function stopDemo(){if(timer){clearInterval(timer);timer=null;}}
+  stepEls.forEach(function(s){s.addEventListener('click',function(){show(+s.getAttribute('data-i'));if(playing)startDemo();});});
+  var nx=document.getElementById('next'),pv=document.getElementById('prev'),pl=document.getElementById('play');
+  if(nx)nx.addEventListener('click',function(){show(cur+1);if(playing)startDemo();});
+  if(pv)pv.addEventListener('click',function(){show(cur-1);if(playing)startDemo();});
+  if(pl)pl.addEventListener('click',function(){playing=!playing;pl.innerHTML=playing?'<svg width="11" height="11" viewBox="0 0 10 10"><rect x="1.5" y="1" width="2.5" height="8" rx="1" fill="currentColor"/><rect x="6" y="1" width="2.5" height="8" rx="1" fill="currentColor"/></svg>':'<svg width="11" height="11" viewBox="0 0 10 10"><path d="M2 1.2v7.6L8.5 5z" fill="currentColor"/></svg>';document.getElementById('ppl').textContent=playing?'Auto-playing':'Paused';if(playing)startDemo();else stopDemo();});
+
+  var io;
+  function revealScan(){var els=[].slice.call(document.querySelectorAll('.page.live .anim-in:not(.seen)'));if(reduce||!('IntersectionObserver'in window)){els.forEach(function(e){e.classList.add('seen');});return;}if(!io)io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('seen');io.unobserve(e.target);}});},{threshold:.12});els.forEach(function(e){io.observe(e);});}
+
+  route(); requestAnimationFrame(sizeChart);
+})();
+</script>
